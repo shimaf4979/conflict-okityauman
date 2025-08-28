@@ -1,0 +1,42 @@
+name: Auto Update Main Branch
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+jobs:
+  auto-update:
+    if: |
+      (github.event_name == 'push' || (github.event.pull_request.merged == true)) &&
+      !contains(github.event.head_commit.message, '[skip-auto-update]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          token: ${{  secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Add line to file
+        run: |
+          sed -i '1,3d' index.js
+          sed -i '1,3d' index.js
+          echo 'const a = "nya"' >> index.js
+          echo 'const b = "nyaa"' >> index.js
+          echo 'const c = "nyaaa"' >> index.js
+          echo 'const d = "nyaaaa"' >> index.js
+          echo 'const b = "nyaa"' >> index.js
+          echo 'const c = "nyaaa"' >> index.js
+          echo 'const d = "nyaaaa"' >> index.js
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Auto update: delete 3 lines and add nya lines [skip-auto-update]" || exit 0
+          git commit -m "Auto update: delete 3 lines and add nya lines [skip-auto-update]" || exit 0
+          git push
