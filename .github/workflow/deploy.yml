@@ -9,9 +9,10 @@ on:
 
 jobs:
   auto-update:
-    if: github.event_name == 'push' || (github.event.pull_request.merged == true)
+    if: |
+      (github.event_name == 'push' || (github.event.pull_request.merged == true)) &&
+      !contains(github.event.head_commit.message, '[skip-auto-update]')
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,5 +28,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git commit -m "Auto update: add nya line" || exit 0
+          git commit -m "Auto update: add nya line [skip-auto-update]" || exit 0
           git push
